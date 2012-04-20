@@ -1,0 +1,157 @@
+#!/usr/bin/env perl
+
+#
+# AGI script that uses Google Translate API v2 for text translation.
+#
+# Copyright (C) 2012, Lefteris Zafiris <zaf.000@gmail.com>
+#
+# This program is free software, distributed under the terms of
+# the GNU General Public License Version 2. See the COPYING file
+# at the top of the source tree.
+#
+# -----
+# Usage
+# -----
+# agi(googletranslate.agi,"text",[target language],[source language]):
+# The text string will be send to google translate for translation to target language.
+# The translated text will be stored as a channel variable named 'gtranslation'.
+# The setting of source language is optional, if not set the tranlator engine
+# will try to auto detect it.
+# If both target language and source language are omitted the script performs language
+# detection on the given text string and returns the two-character language code
+# as the value of the channel variable 'glang'
+#
+# An API Key from google is required.
+#
+
+use warnings;
+use strict;
+use CGI::Util qw(escape);
+use JSON qw(decode_json);
+use LWP::UserAgent;
+
+binmode(STDOUT, ":utf8");
+$| = 1;
+
+# ----------------------------- #
+#   User defined parameters:    #
+# ----------------------------- #
+#  App ID from google           #
+my $appid = "";
+
+# Verbose debugging messages    #
+my $debug = 0;
+
+# ----------------------------- #
+
+my %AGI;
+my $text;
+my $in_lang;
+my $out_lang;
+my $url = "https://www.googleapis.com/language/translate/v2";
+
+# Store AGI input #
+while (<STDIN>) {
+	chomp;
+	last if (!length);
+	$AGI{$1} = $2 if (/^agi_(\w+)\:\s+(.*)$/);
+}
+($AGI{arg_1}, $AGI{arg_2}, $AGI{arg_3}) = @ARGV;
+
+my $name = " -- $AGI{request}:";
+
+#if ($debug) {
+#	warn "$name AGI Environment Dump:\n";
+#	warn "$name $_ = $AGI{$_}\n" foreach (sort keys %AGI);
+#}
+
+# Reset channel variable. #
+foreach ("gtranslation", "glang") {
+	print "SET VARIABLE \"$_\" \"-1\"\n";
+	checkresponse();
+}
+
+# Abort if there is not API key. #
+die "$name No API key found. Aborting.\n" if (!$appid);
+
+# Sanitising input #
+for ($AGI{arg_1}) {
+	s/[\\|*~<>^\(\)\[\]\{\}[:cntrl:]]/ /g;
+	s/\s+/ /g;
+	s/^\s|\s$//g;
+	die "$name No text passed. Aborting\n" if (!length);
+	$text = $_;
+}
+
+# Setting source and target language  #
+if (length($AGI{arg_2})) {
+	if ($AGI{arg_2} =~ /[a-zA-Z\-]{2,}/) {
+		$out_lang = $AGI{arg_2};
+	} else {
+		die "$name Invalid output language setting.\n";
+	}
+	if (length($AGI{arg_3})) {
+		if ($AGI{arg_3} =~ /[a-zA-Z\-]{2,}/) {
+			$in_lang = $AGI{arg_3};
+		} else {
+			warn "$name Invalid input language setting. Using auto-detect.\n";
+		}
+	}
+} else {
+	warn "$name Performing Language detection.\n";
+}
+
+warn "$name Text passed for translation: $text\ntarget lang: $out_lang\n" if ($debug && $out_lang);
+warn "$name Text passed for language detection: $text\n" if ($debug && !$out_lang);
+
+# Translate text using Google Translate API #
+my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostmane => 1});
+$ua->agent("Mozilla/5.0 (X11; Linux; rv:8.0) Gecko/20100101");
+$ua->env_proxy;
+$ua->timeout(10);
+$text = escape($text);
+
+if ($in_lang && $out_lang) {
+	$url .= "?key=$appid&q=$text&source=$in_lang&target=$out_lang";
+} elsif (!$in_lang && $out_lang) {
+	$url .= "?key=$appid&q=$text&target=$out_lang";
+} elsif (!$out_lang) {
+	$url .= "/detect?key=$appid&q=$text";
+}
+
+my $request = HTTP::Request->new('GET' => "$url");
+my $response = $ua->request($request);
+die "$name Failed to fetch file.\n" if (!$response->is_success);
+# export resulted text to channel variable #
+my $jdata = decode_json $response->content;
+
+if ($out_lang) {
+	print "SET VARIABLE \"gtranslation\" \"$$jdata{data}{translations}[0]{translatedText}\"\n";
+	checkresponse();
+} else {
+	print "SET VARIABLE \"glang\" \"$$jdata{data}{detections}[0][0]{language}\"\n";
+	checkresponse();
+}
+
+exit;
+
+sub checkresponse {
+	my $input = <STDIN>;
+	my @values;
+
+	chomp $input;
+	if ($input =~ /^200/) {
+		$input =~ /result=(-?\d+)\s?(.*)$/;
+		if (!length($1)) {
+			warn "$name Command failed: $input\n";
+			@values = ("-1");
+		} else {
+			warn "$name Command returned: $input\n" if ($debug);
+			@values = ("$1", "$2");
+		}
+	} else {
+		warn "$name Unexpected result: $input\n";
+		@values = ("-1");
+	}
+	return @values;
+}

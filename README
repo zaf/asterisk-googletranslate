@@ -1,0 +1,101 @@
+=============================================
+   Google Translate script for Asterisk
+=============================================
+
+This script makes use of Google Translate API v2 to translate
+text strings and return them as channel variables.
+
+------------
+Requirements
+------------
+Perl         The Perl Programming Language
+perl-libwww  The World-Wide Web library for Perl
+perl-libjson Module for manipulating JSON-formatted data
+
+API Key from google
+Internet access in order to contact google and get the language data.
+
+------------
+Installation
+------------
+To install copy googletranslate.agi to your agi-bin directory.
+Usually this is /var/lib/asterisk/agi-bin/
+To make sure check your /etc/asterisk/asterisk.conf file
+
+-----
+Usage
+-----
+agi(googletranslate.agi,"text",[target language],[source language]):
+ The text string will be send to google translate for translation to target language.
+ The translated text will be stored as a channel variable named 'gtranslation'.
+ The setting of source language is optional, if not set the tranlator engine
+ will try to auto detect it.
+ If both target language and source language are omitted the script performs language
+ detection on the given text string and returns the two-character language code
+ as the value of the channel variable 'glang'
+
+--------
+Examples
+--------
+sample dialplan code for your extensions.conf
+
+;Translate a text string from english to french:
+exten => 1234,1,agi(googletranslate.agi,"This is some random text.",fr)
+exten => 1234,n,Verbose(1,Translated text: ${gtranslation})
+
+;Translate from greek to german:
+exten => 1234,1,agi(googletranslate.agi,"Αυτό είναι ένα απλό τέστ στα ελληνικά.",de)
+exten => 1234,n,Verbose(1,Translated text: ${ gtranslation})
+
+;Translate from japanese to english:
+exten => 1234,1,agi(googletranslate.agi,"これは、日本の簡単なテストです。良い一日を。",en)
+exten => 1234,n,Verbose(1,Translated text: ${gtranslation})
+
+;Translate string to many languages:
+exten => 1235,1,Set(MYTEXT="This is some random text for translation.")
+exten => 1235,n,agi(googletranslate.agi,"${MYTEXT}",it)
+exten => 1235,n,Verbose(1,In Italian: ${gtranslation})
+
+exten => 1235,n,agi(googletranslate.agi,"${MYTEXT}",fr)
+exten => 1235,n,Verbose(1,In French: ${gtranslation})
+
+exten => 1235,n,agi(googletranslate.agi,"${MYTEXT}",ja)
+exten => 1235,n,Verbose(1,In Japanese: ${gtranslation})
+
+exten => 1235,n,agi(googletranslate.agi,"${MYTEXT}",es)
+exten => 1235,n,Verbose(1,In Spanish: ${gtranslation})
+
+;Detect text language:
+exten => 1236,1,Set(MYTEXT="This is some random text for detection.")
+exten => 1236,n,agi(googletranslate.agi,"${MYTEXT}")
+exten => 1236,n,Verbose(1,Detected language: ${glang})
+
+
+-------------------
+Supported Languages
+-------------------
+Translation is possible between any two of these languages:
+af	ar	be
+bg	ca	cs
+cy	da	de
+el	en	eo
+es	et	fa
+fi	fr	ga
+gl	hi	hr
+ht	hu	id
+is	it	iw
+ja	ko	lt
+lv	mk	ms
+mt	nl	no
+pl	pt	ro
+ru	sk	sl
+sq	sr	sv
+sw	th	tl
+tr	uk	vi
+yi	zh	zh-TW
+
+-------
+License
+-------
+The googletranslate script for asterisk is distributed under
+the GNU General Public License v2. See COPYING for details.
