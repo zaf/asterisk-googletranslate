@@ -18,7 +18,7 @@ use CGI::Util qw(escape);
 use JSON;
 use LWP::UserAgent;
 
-binmode(STDOUT, ":utf8");
+binmode(STDOUT, ":encoding(UTF-8)");
 
 # ------------------------------------------- #
 # Here you can assign your App ID from Google #

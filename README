@@ -8,9 +8,10 @@ text strings and return them as channel variables.
 ------------
 Requirements
 ------------
-Perl         The Perl Programming Language
-perl-libwww  The World-Wide Web library for Perl
-perl-libjson Module for manipulating JSON-formatted data
+Perl          The Perl Programming Language
+perl-libwww   The World-Wide Web library for Perl
+perl-libjson  Module for manipulating JSON-formatted data
+IO-Socket-SSL Perl module that implements an interface to SSL sockets.
 
 API Key from google
 Internet access in order to contact google and get the language data.
