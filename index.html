@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <title>Asterisk-googletranslate by zaf</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Asterisk-googletranslate</h1>
+        <h2>AGI script that uses Google Translate API v2 for text translation and language detection. </h2>
+
+        <section id="downloads">
+          <a href="https://github.com/zaf/asterisk-googletranslate/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/zaf/asterisk-googletranslate/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/zaf/asterisk-googletranslate" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1></h1>
+
+<h1>   Google Translate script for Asterisk</h1>
+
+<p>This script makes use of Google Translate API v2 to translate
+text strings and return them as channel variables.</p>
+
+<hr><h2>Requirements</h2>
+
+<p>Perl          The Perl Programming Language
+perl-libwww   The World-Wide Web library for Perl
+perl-libjson  Module for manipulating JSON-formatted data
+IO-Socket-SSL Perl module that implements an interface to SSL sockets.</p>
+
+<p>API Key from google
+Internet access in order to contact google and get the language data.</p>
+
+<hr><h2>Installation</h2>
+
+<p>To install copy googletranslate.agi to your agi-bin directory.
+Usually this is /var/lib/asterisk/agi-bin/
+To make sure check your /etc/asterisk/asterisk.conf file</p>
+
+<hr><h2>Usage</h2>
+
+<p>agi(googletranslate.agi,"text",[target language],[source language]):
+ The text string will be send to google translate for translation to target language.
+ The translated text will be stored as a channel variable named 'gtranslation'.
+ The setting of source language is optional, if not set the tranlator engine
+ will try to auto detect it.
+ If both target language and source language are omitted the script performs language
+ detection on the given text string and returns the two-character language code
+ as the value of the channel variable 'glang'</p>
+
+<hr><h2>Examples</h2>
+
+<p>sample dialplan code for your extensions.conf</p>
+
+<p>;Translate a text string from english to french:
+exten =&gt; 1234,1,agi(googletranslate.agi,"This is some random text.",fr)
+exten =&gt; 1234,n,Verbose(1,Translated text: ${gtranslation})</p>
+
+<p>;Translate from greek to german:
+exten =&gt; 1234,1,agi(googletranslate.agi,"Αυτό είναι ένα απλό τέστ στα ελληνικά.",de)
+exten =&gt; 1234,n,Verbose(1,Translated text: ${ gtranslation})</p>
+
+<p>;Translate from japanese to english:
+exten =&gt; 1234,1,agi(googletranslate.agi,"これは、日本の簡単なテストです。良い一日を。",en)
+exten =&gt; 1234,n,Verbose(1,Translated text: ${gtranslation})</p>
+
+<p>;Translate string to many languages:
+exten =&gt; 1235,1,Set(MYTEXT="This is some random text for translation.")
+exten =&gt; 1235,n,agi(googletranslate.agi,"${MYTEXT}",it)
+exten =&gt; 1235,n,Verbose(1,In Italian: ${gtranslation})</p>
+
+<p>exten =&gt; 1235,n,agi(googletranslate.agi,"${MYTEXT}",fr)
+exten =&gt; 1235,n,Verbose(1,In French: ${gtranslation})</p>
+
+<p>exten =&gt; 1235,n,agi(googletranslate.agi,"${MYTEXT}",ja)
+exten =&gt; 1235,n,Verbose(1,In Japanese: ${gtranslation})</p>
+
+<p>exten =&gt; 1235,n,agi(googletranslate.agi,"${MYTEXT}",es)
+exten =&gt; 1235,n,Verbose(1,In Spanish: ${gtranslation})</p>
+
+<p>;Detect text language:
+exten =&gt; 1236,1,Set(MYTEXT="This is some random text for detection.")
+exten =&gt; 1236,n,agi(googletranslate.agi,"${MYTEXT}")
+exten =&gt; 1236,n,Verbose(1,Detected language: ${glang})</p>
+
+<hr><h2>Supported Languages</h2>
+
+<p>Translation is possible between any two of these languages:
+af  ar  be
+bg  ca  cs
+cy  da  de
+el  en  eo
+es  et  fa
+fi  fr  ga
+gl  hi  hr
+ht  hu  id
+is  it  iw
+ja  ko  lt
+lv  mk  ms
+mt  nl  no
+pl  pt  ro
+ru  sk  sl
+sq  sr  sv
+sw  th  tl
+tr  uk  vi
+yi  zh  zh-TW</p>
+
+<hr><h2>License</h2>
+
+<p>The googletranslate script for asterisk is distributed under
+the GNU General Public License v2. See COPYING for details.</p>
+      </section>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-10482811-7");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
