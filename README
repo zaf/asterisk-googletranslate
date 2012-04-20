@@ -46,7 +46,7 @@ exten => 1234,n,Verbose(1,Translated text: ${gtranslation})
 
 ;Translate from greek to german:
 exten => 1234,1,agi(googletranslate.agi,"Αυτό είναι ένα απλό τέστ στα ελληνικά.",de)
-exten => 1234,n,Verbose(1,Translated text: ${ gtranslation})
+exten => 1234,n,Verbose(1,Translated text: ${gtranslation})
 
 ;Translate from japanese to english:
 exten => 1234,1,agi(googletranslate.agi,"これは、日本の簡単なテストです。良い一日を。",en)
@@ -100,3 +100,8 @@ License
 -------
 The googletranslate script for asterisk is distributed under
 the GNU General Public License v2. See COPYING for details.
+
+--------
+Homepage
+--------
+http://zaf.github.com/asterisk-googletranslate/
