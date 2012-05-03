@@ -60,11 +60,6 @@ while (<STDIN>) {
 
 my $name = " -- $AGI{request}:";
 
-#if ($debug) {
-#	warn "$name AGI Environment Dump:\n";
-#	warn "$name $_ = $AGI{$_}\n" foreach (sort keys %AGI);
-#}
-
 # Reset channel variable. #
 foreach ("gtranslation", "glang") {
 	print "SET VARIABLE \"$_\" \"-1\"\n";
@@ -106,7 +101,6 @@ warn "$name Text passed for language detection: $text\n" if ($debug && !$out_lan
 
 # Translate text using Google Translate API #
 my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostmane => 1});
-$ua->agent("Mozilla/5.0 (X11; Linux; rv:8.0) Gecko/20100101");
 $ua->env_proxy;
 $ua->timeout(10);
 $text = escape($text);
@@ -119,8 +113,7 @@ if ($in_lang && $out_lang) {
 	$url .= "/detect?key=$appid&q=$text";
 }
 
-my $request = HTTP::Request->new('GET' => "$url");
-my $response = $ua->request($request);
+my $response = $ua->post("$url", "X-HTTP-Method-Override" => "GET");
 die "$name Failed to fetch file.\n" if (!$response->is_success);
 # export resulted text to channel variable #
 my $jdata = decode_json $response->content;

@@ -28,9 +28,6 @@ my %options;
 my $input;
 my $in_lang;
 my $out_lang;
-my $ua;
-my $request;
-my $response;
 my $timeout = 10;
 my $url     = "https://www.googleapis.com/language/translate/v2";
 
@@ -96,8 +93,7 @@ for ($input) {
 	$_ = escape($_);
 }
 
-$ua = LWP::UserAgent->new(ssl_opts => {verify_hostname => 1});
-$ua->agent("Mozilla/5.0 (X11; Linux; rv:8.0) Gecko/20100101");
+my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostname => 1});
 $ua->env_proxy;
 $ua->timeout($timeout);
 
@@ -109,14 +105,12 @@ if ($in_lang && $out_lang) {
 	$url .= "/detect?key=$appid&q=$input";
 }
 
-$request = HTTP::Request->new('GET' => "$url");
-$response = $ua->request($request);
+my $response = $ua->post("$url", "X-HTTP-Method-Override" => "GET");
 if (!$response->is_success) {
 	say_msg("Failed to fetch translation data.");
 	exit 1;
 } else {
 	my $jdata = decode_json $response->content;
-	#print Dumper $jdata;
 	print $$jdata{data}{translations}[0]{translatedText}, "\n" if ($out_lang);
 	print $$jdata{data}{detections}[0][0]{language}, "\n" if (!$out_lang);
 }
@@ -124,8 +118,8 @@ exit 0;
 
 sub say_msg {
 # Print messages to user if 'quiet' flag is not set #
-	my $message = shift;
-	warn "$0: $message" if (!defined $options{q});
+	my @message = @_;
+	warn @message if (!defined $options{q});
 	return;
 }
 
@@ -149,11 +143,10 @@ sub VERSION_MESSAGE {
 
 sub lang_list {
 # Display the list of supported languages, we can translate between any two of these languages #
-	$ua = LWP::UserAgent->new(ssl_opts => {verify_hostname => 1});
-	$ua->agent("Mozilla/5.0 (X11; Linux; rv:8.0) Gecko/20100101");
+	my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostname => 1});
 	$ua->timeout($timeout);
-	$request = HTTP::Request->new('GET' => "$url/languages?key=$appid");
-	$response = $ua->request($request);
+	my $request  = HTTP::Request->new('GET' => "$url/languages?key=$appid");
+	my $response = $ua->request($request);
 	if ($response->is_success) {
 		print "Supported languages list:\n",
 			join("\n", grep(!/language|data|[\{\}\[\]:,]/, split(/"([a-zA-Z\-]{2,})"/, $response->content))), "\n";
