@@ -1,2 +1,6 @@
 2012-04-21 Lefteris Zafiris <zaf.000@gmail.com> - 0.1
 	Initial release 0.1
+
+2012-05-15 Lefteris Zafiris <zaf.000@gmail.com> - 0.2
+	Added support for text strings up to 5000 chars.
+	Readme updates, various small fixes
