@@ -137,14 +137,14 @@ sub checkresponse {
 		$input =~ /result=(-?\d+)\s?(.*)$/;
 		if (!length($1)) {
 			warn "$name Command failed: $input\n";
-			@values = ("-1");
+			@values = (-1, -1);
 		} else {
 			warn "$name Command returned: $input\n" if ($debug);
 			@values = ("$1", "$2");
 		}
 	} else {
 		warn "$name Unexpected result: $input\n";
-		@values = ("-1");
+		@values = (-1, -1);
 	}
 	return @values;
 }
