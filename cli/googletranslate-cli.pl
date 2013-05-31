@@ -14,7 +14,7 @@
 use warnings;
 use strict;
 use Getopt::Std;
-use CGI::Util qw(escape);
+use URI::Escape;
 use JSON;
 use LWP::UserAgent;
 
@@ -90,7 +90,7 @@ for ($input) {
 		say_msg("No text passed for translation.");
 		exit 1;
 	}
-	$_ = escape($_);
+	$_ = uri_escape($_);
 }
 
 my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostname => 1});

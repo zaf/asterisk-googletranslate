@@ -26,7 +26,7 @@
 
 use warnings;
 use strict;
-use CGI::Util qw(escape);
+use URI::Escape;
 use JSON qw(decode_json);
 use LWP::UserAgent;
 
@@ -103,7 +103,7 @@ warn "$name Text passed for language detection: $text\n" if ($debug && !$out_lan
 my $ua = LWP::UserAgent->new(ssl_opts => {verify_hostmane => 1});
 $ua->env_proxy;
 $ua->timeout(10);
-$text = escape($text);
+$text = uri_escape($text);
 
 if ($in_lang && $out_lang) {
 	$url .= "?key=$appid&q=$text&source=$in_lang&target=$out_lang";
