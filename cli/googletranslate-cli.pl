@@ -5,7 +5,7 @@
 #
 # In order to use this script an Google API Key is needed.
 #
-# Copyright (C) 2012, Lefteris Zafiris <zaf.000@gmail.com>
+# Copyright (C) 2012 - 2014, Lefteris Zafiris <zaf.000@gmail.com>
 #
 # This program is free software, distributed under the terms of
 # the GNU General Public License Version 2.
