@@ -51,12 +51,12 @@ my $out_lang;
 my $url = "https://www.googleapis.com/language/translate/v2";
 
 # Store AGI input #
+($AGI{arg_1}, $AGI{arg_2}, $AGI{arg_3}) = @ARGV;
 while (<STDIN>) {
 	chomp;
 	last if (!length);
 	$AGI{$1} = $2 if (/^agi_(\w+)\:\s+(.*)$/);
 }
-($AGI{arg_1}, $AGI{arg_2}, $AGI{arg_3}) = @ARGV;
 
 my $name = " -- $AGI{request}:";
 
