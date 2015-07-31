@@ -144,6 +144,7 @@ sub checkresponse {
 			@values = ("$1", "$2");
 		}
 	} else {
+		$input .= <STDIN> if ($input =~ /^520-Invalid/);
 		warn "$name Unexpected result: $input\n";
 		@values = (-1, -1);
 	}
